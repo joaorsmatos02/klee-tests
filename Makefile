@@ -3,7 +3,7 @@
 #
 #
 # Usage:
-#   make run_all               run all 100 tests
+#   make run_all               run all 127 tests
 #   make run_open              run all open() tests
 #   make run_open_01           run open/test_01 only
 #   make run_write             run all write() tests
@@ -22,6 +22,9 @@
 #   make compile_open          compile open/ only
 #   make clean                 nuke everything
 #   make clean_open            clean open/ only
+#   make json_all              run_all, with the results as JSON on stdout
+#   make json_open             run_open, as JSON
+#   make json_open_01          run_open_01, as JSON
 # ═══════════════════════════════════════════════════════════════
 
 RED      = \033[1;31m
@@ -144,3 +147,11 @@ run_close_%:
 run_dup_%:
 	@$(MAKE) -C individual-tests/dup compile
 	@$(MAKE) -C individual-tests/dup run_$*
+
+# json_all, json_open, json_open_12 and so on run exactly what the matching
+# run_* target runs, with its usual output moved to stderr, then print the
+# results as JSON on stdout. "make json_all > results.json" therefore leaves
+# only the JSON in the file, while the progress still shows in the terminal.
+json_%:
+	@$(MAKE) --no-print-directory run_$* >&2
+	@sh scripts/results_json.sh $(if $(filter all,$*),$(SUITES),$*)

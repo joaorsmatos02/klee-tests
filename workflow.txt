@@ -49,6 +49,22 @@ Or from inside a suite directory:
 
 
 -------------------------------------------------------------------------------
+ RESULTS AS JSON
+-------------------------------------------------------------------------------
+
+Every run_* target has a json_* twin that runs the same tests, then prints
+the results as JSON on stdout. The usual output still shows, on stderr.
+
+  make json_all > results.json
+  make json_open
+  make json_open_12
+
+Each test gives its result (pass or fail, decided as below), KLEE's
+completed paths, partially completed paths and generated tests, and its
+output directory. Totals are given per suite and overall.
+
+
+-------------------------------------------------------------------------------
  HOW PASS AND FAIL ARE DECIDED
 -------------------------------------------------------------------------------
 

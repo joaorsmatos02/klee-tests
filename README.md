@@ -52,6 +52,27 @@ make run_open_12        # one test
 fail are decided, how to read a failure, and how to rebuild the engine after
 editing the fork.
 
+### Results as JSON
+
+Every `run_*` target has a `json_*` counterpart that runs the same tests,
+then prints the results as JSON on stdout while the usual output goes to
+stderr:
+
+```bash
+make json_all > results.json
+```
+
+From outside the container, leave out `-t`, which would merge the two
+streams into the file:
+
+```bash
+docker run --rm klee-fsapi make json_all > results.json
+```
+
+Each test gives its `result`, KLEE's `completed_paths`,
+`partially_completed_paths` and `generated_tests`, and its `output_dir`.
+Totals are given per suite and overall.
+
 ### Pinning exact revisions
 
 By default the image is built from the tip of the fork's `api_klee` branch
@@ -95,6 +116,7 @@ include/            test_helper.h, the assertions and symbolic-input helpers
 individual-tests/   one folder per system call, each with its results spreadsheet
 issues/             klee_posix_findings.xlsx, the defects the suite found
 docker/             rebuild_posix.sh and rebuild_all.sh, used by the image
+scripts/            results_json.sh, which turns a run's logs into JSON
 Dockerfile          builds the fork and this suite into a ready-to-run image
 workflow.txt        how to run the tests, and how to read the results
 ```
