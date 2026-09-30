@@ -14,36 +14,36 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
    __assume(flags_equal(flags, O_RDWR));
 
    int fd1 = open(fname, flags, 0644);
-   __gen_assert(open_succeeds(fd1));
+   __assert(open_succeeds(fd1));
 
    int fd2 = dup(fd1);
-   __gen_assert(dup_is_new(fd2, fd1));
+   __assert(dup_is_new(fd2, fd1));
 
    //both start at offset 0
    off_t pos1 = lseek(fd1, 0, SEEK_CUR);
-   __gen_assert(lseek_is(pos1, 0));
+   __assert(lseek_is(pos1, 0));
    off_t pos2 = lseek(fd2, 0, SEEK_CUR);
-   __gen_assert(lseek_is(pos2, 0));
+   __assert(lseek_is(pos2, 0));
 
    //write 5 bytes on fd1, moves fd1 offset to 5
    ssize_t wret = write(fd1, "hello", 5);
-   __gen_assert(write_all(wret, 5));
+   __assert(write_all(wret, 5));
    off_t pos3 = lseek(fd1, 0, SEEK_CUR);
-   __gen_assert(lseek_is(pos3, 5));
+   __assert(lseek_is(pos3, 5));
 
    //KLEE QUIRK: fd2 offset is still 0 (not shared), on real kernel this would be 5
    off_t pos4 = lseek(fd2, 0, SEEK_CUR);
-   __gen_assert(lseek_is(pos4, 0));
+   __assert(lseek_is(pos4, 0));
 
    printf("[PASS] KLEE quirk confirmed: fd2 offset not shared with fd1\n");
 

@@ -1,19 +1,19 @@
 # A tool-independent file-system test suite for symbolic execution engines
 
-127 tests covering eight POSIX system calls, written against a
+133 tests covering eight POSIX system calls, written against a
 tool-independent file-system API rather than against any one engine's
 internals.
 
 | System call | Tests | |
 |---|---|---|
-| `open` | 51 | |
+| `open` | 57 | |
 | `close` | 10 | |
 | `read` | 12 | |
 | `write` | 13 | |
 | `lseek` | 15 | |
 | `chmod` | 13 | |
 | `dup` / `dup2` | 13 | |
-| **Total** | **127** | 102 pass, 25 fail |
+| **Total** | **133** | 102 pass, 25 fail (of the first 127) |
 
 Defects found are in `issues/klee_posix_findings.xlsx`. For what each test
 does, see the spreadsheet in its `individual-tests/` folder. For example, the `open` folder has the `open_results` which explain each test.
@@ -22,9 +22,11 @@ does, see the spreadsheet in its `individual-tests/` folder. For example, the `o
 
 > **This suite does not run on stock KLEE.**
 
-The tests are written against file-system API primitives that stock KLEE does
-not provide: `__file_create`, `file_exists`, `__assume`, `__gen_assert`,
-`__file_offset`, `__is_sat`, `__is_certain` and others. They live in a fork:
+The tests are written against a shared file-system API, the `__` functions
+(`__file_create`, `__file_exists`, `__assume`, `__assert`, `__file_offset`,
+`__is_sat`, `__is_certain` and others) and the `_EQ_`-style constraints, so
+the same tests run on other engines too. Each engine provides the API as
+`sra.h`. Stock KLEE does not provide it; the fork does:
 
 * **[github.com/dino-fan777/klee](https://github.com/dino-fan777/klee)**, branch **`api_klee`**
 
@@ -43,7 +45,7 @@ docker run -it --rm klee-fsapi
 It opens in `/home/klee/klee-tests` and prints the usage notes on entry. Then:
 
 ```bash
-make run_all            # all 127 tests, expect 102 passed / 25 failed
+make run_all            # all 133 tests; of the first 127, expect 102 passed / 25 failed
 make run_open           # one system call
 make run_open_12        # one test
 ```
@@ -106,13 +108,15 @@ matching the LLVM that KLEE was built against. Then:
 make run_all
 ```
 
-Each suite compiles with `-I../../include`, so `include/test_helper.h` is
-found automatically from `individual-tests/<syscall>/`.
+Each suite compiles with `-I../../include -I../../include/klee`, so
+`include/test_helper.h` and KLEE's `include/klee/sra.h` are found
+automatically from `individual-tests/<syscall>/`.
 
 ## Layout
 
 ```
 include/            test_helper.h, the assertions and symbolic-input helpers
+include/klee/       sra.h, the shared API for KLEE, from the fork's klee/file_api.h
 individual-tests/   one folder per system call, each with its results spreadsheet
 issues/             klee_posix_findings.xlsx, the defects the suite found
 docker/             rebuild_posix.sh and rebuild_all.sh, used by the image
@@ -130,7 +134,7 @@ KLEE: done: completed paths = 0
 ```
 
 No input satisfying the test's `__assume()` constraints also satisfies its
-`__gen_assert()` assertions, so the behaviour it describes is unreachable.
+`__assert()` assertions, so the behaviour it describes is unreachable.
 Anything else passes.
 
 This is deliberately not "did any path hit an assertion". With a symbolic
@@ -144,22 +148,22 @@ operation under test is supposed to be refused, so an assertion failing on
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
 
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);        // a symbolic name
    flags = declare_symbolic_flags();
 
-   cleanup_fd(__file_create("A_data"));     // the test creates its own file
-   __assume(file_exists(fname));
+   create_test_file(fname);                 // the test creates its own file, under that name
+   __assume(exists(fname));
    __assume(flags_equal(flags, O_RDONLY));
 
    int fd = open(fname, flags);
 
-   __gen_assert(open_succeeds(fd));
-   __gen_assert(fd_is(fd, 3));
+   __assert(open_succeeds(fd));
+   __assert(fd_is(fd, 3));
 
-   __gen_assert(close_succeeds(close(fd)));
+   __assert(close_succeeds(close(fd)));
    return 0;
 }
 ```

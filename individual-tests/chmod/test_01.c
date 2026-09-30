@@ -7,14 +7,14 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
-   declare_symbolic_file_name(fname);
+   char fname[FNAME_SIZE];
+   create_symbolic_file_name(fname);
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
 
    int cret = chmod(fname, 0644);
-   __gen_assert(chmod_succeeds(cret));
+   __assert(chmod_succeeds(cret));
 
    return 0;
 }

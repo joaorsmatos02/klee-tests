@@ -7,17 +7,17 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
 
-   declare_symbolic_file_name(fname);
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_symbolic_file_name(fname);
+   create_test_file(fname);
+   __assume(exists(fname));
 
    int fd1 = open(fname, O_RDONLY);
-   __gen_assert(open_succeeds(fd1));
+   __assert(open_succeeds(fd1));
 
    int fd2 = open(fname, O_RDWR);
-   __gen_assert(open_succeeds(fd2));
+   __assert(open_succeeds(fd2));
 
    cleanup_fd(fd1);
    cleanup_fd(fd2);

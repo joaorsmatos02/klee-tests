@@ -7,30 +7,30 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
 
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
    __assume(flags_equal(flags, O_RDONLY));
 
    int fd1 = open(fname, flags);
 
-   __gen_assert(open_succeeds(fd1));
-   __gen_assert(fd_is(fd1, 3));
+   __assert(open_succeeds(fd1));
+   __assert(fd_is(fd1, 3));
 
    int fd2 = dup(fd1);
-   __gen_assert(dup_is_new(fd2, fd1));
+   __assert(dup_is_new(fd2, fd1));
 
-   __gen_assert(fd_is(fd2, 4));
+   __assert(fd_is(fd2, 4));
 
    int cret = close(fd2);
-   __gen_assert(close_succeeds(cret));
+   __assert(close_succeeds(cret));
    cret = close(fd1);
-   __gen_assert(close_succeeds(cret));
+   __assert(close_succeeds(cret));
 
    return 0;
 }

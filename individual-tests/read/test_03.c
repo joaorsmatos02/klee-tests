@@ -7,21 +7,21 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
    __assume(flags_equal(flags, O_WRONLY));
 
    int fd = open(fname, flags, 0644);
-   __gen_assert(open_succeeds(fd));
+   __assert(open_succeeds(fd));
 
    char buf[5] = {0};
    ssize_t rret = read(fd, buf, 5);
-   __gen_assert(read_error(rret));
+   __assert(read_error(rret));
 
    cleanup_fd(fd);
    return 0;

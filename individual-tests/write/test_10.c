@@ -7,26 +7,26 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
    __assume(flags_equal(flags, O_APPEND | O_WRONLY));
 
    int fd = open(fname, flags, 0644);
-   __gen_assert(open_succeeds(fd));
+   __assert(open_succeeds(fd));
 
    off_t original_size = lseek(fd, 0, SEEK_END);
-   printf("[info] original file size = %d\n", klee_get_value_i32(original_size));
+   printf("[info] original file size = %d\n", (int) __concretize(original_size));
 
    ssize_t wret = write(fd, "abc", 3);
-   __gen_assert(write_all(wret, 3));
+   __assert(write_all(wret, 3));
 
    off_t current = lseek(fd, 0, SEEK_CUR);
-   __gen_assert(lseek_is(current, original_size + 3));
+   __assert(lseek_is(current, original_size + 3));
 
    cleanup_fd(fd);
    return 0;

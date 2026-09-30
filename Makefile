@@ -3,7 +3,7 @@
 #
 #
 # Usage:
-#   make run_all               run all 127 tests
+#   make run_all               run all 133 tests
 #   make run_open              run all open() tests
 #   make run_open_01           run open/test_01 only
 #   make run_write             run all write() tests

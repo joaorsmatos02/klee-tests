@@ -10,21 +10,21 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
-   declare_symbolic_file_name(fname);
+   char fname[FNAME_SIZE];
+   create_symbolic_file_name(fname);
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
 
    int cret = chmod(fname, 0644);
-   __gen_assert(chmod_succeeds(cret));
+   __assert(chmod_succeeds(cret));
 
    int fd_r = open(fname, O_RDONLY);
-   __gen_assert(open_succeeds(fd_r));
+   __assert(open_succeeds(fd_r));
    cleanup_fd(fd_r);
 
    int fd_w = open(fname, O_WRONLY);
-   __gen_assert(open_succeeds(fd_w));
+   __assert(open_succeeds(fd_w));
    cleanup_fd(fd_w);
 
    return 0;

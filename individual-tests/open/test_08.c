@@ -7,19 +7,21 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
+   char other[FNAME_SIZE];
    int  flags;
 
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_not_exists(fname));
+   create_symbolic_file_name(other);
+   create_test_file(other);
+   __assume(not_exists(fname));
    __assume(flags_equal(flags, O_CREAT | O_RDWR));
 
    int fd = open(fname, flags);
 
-   __gen_assert(open_succeeds(fd));
+   __assert(open_succeeds(fd));
 
    cleanup_fd(fd);
    return 0;

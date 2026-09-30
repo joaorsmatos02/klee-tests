@@ -9,9 +9,12 @@
 #include "test_helper.h"
 
 int main(void) {
-   cleanup_fd(__file_create("A_data"));
+   char fname[FNAME_SIZE];
+
+   create_symbolic_file_name(fname);
+   create_test_file(fname);
    int cret = close(-1);
-   __gen_assert(close_fails(cret));
+   __assert(close_fails(cret));
 
    return 0;
 }

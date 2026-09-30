@@ -4,7 +4,7 @@
 # ═══════════════════════════════════════════════════════════════
 
 CC       = clang
-CFLAGS   = -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include
+CFLAGS   = -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include -I../../include/klee
 KLEE     = klee
 KLEEOPTS = --posix-runtime --libc=uclibc
 # Tests create their own symbolic files through the API (__file_create),

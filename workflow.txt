@@ -16,7 +16,8 @@ any one engine's command line.
 
   make run_all
 
-Expected on the current fork: 102 passed, 25 failed, out of 127.
+Expected on the current fork, for the first 127 tests: 102 passed, 25 failed.
+open/test_52 to test_57 were added later, and have no recorded result yet.
 The 25 failures are real defects in KLEE's POSIX summaries, not broken
 tests. See issues/klee_posix_findings.xlsx.
 
@@ -25,7 +26,7 @@ tests. See issues/klee_posix_findings.xlsx.
  RUN ONE SYSTEM CALL
 -------------------------------------------------------------------------------
 
-  make run_open           all 51 open tests
+  make run_open           all 57 open tests
   make run_close          all 10 close tests
   make run_read           all 12 read tests
   make run_write          all 13 write tests
@@ -73,7 +74,7 @@ A test FAILS when KLEE reports:
   KLEE: done: completed paths = 0
 
 meaning no input satisfying the test's __assume() constraints also satisfies
-its __gen_assert() assertions, so the behaviour the test describes is not
+its __assert() assertions, so the behaviour the test describes is not
 reachable at all. Anything else is a PASS.
 
 Note this is deliberately not "did any path hit an assertion". With a

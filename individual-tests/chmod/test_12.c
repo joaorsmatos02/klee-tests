@@ -11,20 +11,20 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
-   declare_symbolic_file_name(fname);
+   char fname[FNAME_SIZE];
+   create_symbolic_file_name(fname);
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
 
    int cret1 = chmod(fname, 0777);
-   __gen_assert(chmod_succeeds(cret1));
+   __assert(chmod_succeeds(cret1));
 
    int cret2 = chmod(fname, 0444);
-   __gen_assert(chmod_succeeds(cret2));
+   __assert(chmod_succeeds(cret2));
 
    int fd = open(fname, O_WRONLY);
-   __gen_assert(open_fails(fd));
+   __assert(open_fails(fd));
    cleanup_fd(fd);
 
    return 0;

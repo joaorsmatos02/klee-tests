@@ -1,17 +1,67 @@
 #ifndef TEST_HELPER_H
 #define TEST_HELPER_H
 
-#include "klee/file_api.h" 
+/*
+ * The tests use only the shared file-system API (the __ functions and the
+ * _EQ_-style constraints) and libc. Each engine puts its own implementation
+ * of that API, sra.h, on the include path.
+ */
+#include <stdio.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include "sra.h"
+
+/* ══════════════════════════════════════════════════════════════════════
+ **** FILE SETUP
+ * ══════════════════════════════════════════════════════════════════════ */
+
+// File names are FNAME_BYTES symbolic bytes followed by '\0': 1 by default,
+// or N when compiled with -DFNAME_BYTES=N. Only the first byte is
+// constrained, to be non-null, so a name has between 1 and FNAME_BYTES
+// characters. Declare name buffers as char name[FNAME_SIZE].
+#ifndef FNAME_BYTES
+#define FNAME_BYTES 1
+#endif
+#define FNAME_SIZE (FNAME_BYTES + 1)
+
+// The size each test's file is created with
+#define TEST_FILE_SIZE 10
+
+// Fills `buf` with a symbolic file name. The symbolic bytes are labelled
+// after the variable: create_symbolic_file_name(fname) gives fname_0, ...
+#define create_symbolic_file_name(buf) create_symbolic_file_name_(buf, #buf)
+
+static void create_symbolic_file_name_(char *buf, char *label) {
+    int i;
+    for (i = 0; i < FNAME_BYTES; i++)
+        buf[i] = (char) __sym_var_array(label, i, 8);
+    buf[FNAME_BYTES] = '\0';
+    __assume(_NEQ_(buf[0], '\0'));
+}
+
+// Creates the file `name`, of TEST_FILE_SIZE bytes
+static void create_test_file(const char *name) {
+    __file_create(name);
+    int fd = __file_open(name, "r+");
+    __file_set_size(fd, TEST_FILE_SIZE);
+    __file_close(fd);
+}
+
+static cnstr_t exists(const char *fname) {
+    return _EQ_(__file_exists(fname), 1);
+}
+
+static cnstr_t not_exists(const char *fname) {
+    return _EQ_(__file_exists(fname), 0);
+}
 
 /* ══════════════════════════════════════════════════════════════════════
  **** SYMBOLIC VARIABLE SETUP
  * ══════════════════════════════════════════════════════════════════════ */
-
-static void declare_symbolic_file_name(char *fname) {
-    fname[0] = (char) __sym_var_named("fname", 8);
-    fname[1] = '\0';
-    __assume(_NEQ_(fname[0], '\0'));                 
-}
 
 static int declare_symbolic_flags(void) {
     return (int) __sym_var_named("flags", 32);
@@ -139,10 +189,10 @@ static cnstr_t dup2_fails(int ret) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════
- **** ERRNO PREDICATE   (UNVERIFIED: isolation-test __get_errno first)
+ **** ERRNO PREDICATE   (UNVERIFIED: isolation-test errno first)
  * ══════════════════════════════════════════════════════════════════════ */
  
-static cnstr_t errno_is(int expected) { return _EQ_(__get_errno(), expected); }
+static cnstr_t errno_is(int expected) { return _EQ_(errno, expected); }
 
 /* ══════════════════════════════════════════════════════════════════════
  **** CHMOD
@@ -157,7 +207,9 @@ static cnstr_t chmod_fails(int ret) {
 }
 
 static cnstr_t perms_are(int fd, mode_t expected) { 
-    return _EQ_(__file_mode(fd) & 0777, expected & 0777); 
+    mode_t mode;
+    __file_mode(fd, &mode);
+    return _EQ_(mode & 0777, expected & 0777); 
 }
 
 /* ══════════════════════════════════════════════════════════════════════
@@ -176,12 +228,12 @@ static void debug_fd(int fd) {
            __concretize(fd),
            __concretize(__file_flags(fd)),
            __concretize(__file_offset(fd)),
-           __concretize(__get_errno()));
+           __concretize(errno));
 }
  
 static void debug_ret(const char *what, ssize_t ret) {
     printf("  [debug] %s ret=%ld | errno=%ld\n",
-           what, __concretize(ret), __concretize(__get_errno()));
+           what, __concretize(ret), __concretize(errno));
 }
  
 static void debug_name(const char *fname) {

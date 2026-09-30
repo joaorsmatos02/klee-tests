@@ -10,17 +10,17 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
 
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
    __assume(flags_equal(flags, O_RDONLY));
 
    int fd = open(fname, flags);
-   __gen_assert(open_succeeds(fd));
+   __assert(open_succeeds(fd));
 
    //fill all remaining fd slots with dup
    int last_dup = -1;
@@ -31,7 +31,7 @@ int main(void) {
 
    //next open should fail EMFILE
    int fd_full = open(fname, O_RDONLY);
-   __gen_assert(open_fails(fd_full));
+   __assert(open_fails(fd_full));
 
    //cleanup all fds
    for (int i = 3; i < 32; i++) close(i);

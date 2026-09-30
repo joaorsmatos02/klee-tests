@@ -7,9 +7,12 @@
 #include "test_helper.h"
 
 int main(void) {
-   cleanup_fd(__file_create("A_data"));
+   char fname[FNAME_SIZE];
+
+   create_symbolic_file_name(fname);
+   create_test_file(fname);
    ssize_t wret = write(-1, "hello", 5);
-   __gen_assert(write_error(wret));
+   __assert(write_error(wret));
 
    return 0;
 }

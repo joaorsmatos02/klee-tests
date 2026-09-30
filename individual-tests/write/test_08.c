@@ -7,29 +7,29 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
 
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
    __assume(flags_equal(flags, O_RDWR));
 
    int fd = open(fname, flags, 0644);
-   __gen_assert(open_succeeds(fd));
+   __assert(open_succeeds(fd));
 
    char wbuf[] = "hello";
    ssize_t wret = write(fd, wbuf, 5);
-   __gen_assert(write_all(wret, 5));
+   __assert(write_all(wret, 5));
 
    off_t pos = lseek(fd, 0, SEEK_SET);
-   __gen_assert(lseek_is(pos, 0));
+   __assert(lseek_is(pos, 0));
 
    char rbuf[5] = {0};
    ssize_t rret = read(fd, rbuf, 5);
-   __gen_assert(read_all(rret, 5));
-   __gen_assert(buffers_match(wbuf, rbuf, 5));
+   __assert(read_all(rret, 5));
+   __assert(buffers_match(wbuf, rbuf, 5));
 
    cleanup_fd(fd);
    return 0;

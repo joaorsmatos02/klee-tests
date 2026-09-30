@@ -10,20 +10,20 @@
 #include "test_helper.h"
 
 int main(void) {
-   char fname[2];
+   char fname[FNAME_SIZE];
    int  flags;
 
-   declare_symbolic_file_name(fname);
+   create_symbolic_file_name(fname);
    flags = declare_symbolic_flags();
-   cleanup_fd(__file_create("A_data"));
-   __assume(file_exists(fname));
+   create_test_file(fname);
+   __assume(exists(fname));
    int cret = chmod(fname, 0222);
-   __gen_assert(chmod_succeeds(cret));
+   __assert(chmod_succeeds(cret));
    __assume(flags_equal(flags, O_RDONLY));
 
    //This SHOULD fail but PASSES due to has_permission bug
    int fd = open(fname, flags);
-   __gen_assert(open_succeeds(fd));
+   __assert(open_succeeds(fd));
 
    //printf("[PASS] BUG B04 confirmed: O_RDONLY bypasses read permission check\n");
 

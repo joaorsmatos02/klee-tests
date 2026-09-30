@@ -9,9 +9,12 @@
 #include "test_helper.h"
 
 int main(void) {
-   cleanup_fd(__file_create("A_data"));
+   char fname[FNAME_SIZE];
+
+   create_symbolic_file_name(fname);
+   create_test_file(fname);
    off_t pos = lseek(-1, 0, SEEK_SET);
-   __gen_assert(lseek_fails(pos));
+   __assert(lseek_fails(pos));
 
    return 0;
 }

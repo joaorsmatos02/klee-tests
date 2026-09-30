@@ -7,9 +7,12 @@
 #include "test_helper.h"
 
 int main(void) {
-   cleanup_fd(__file_create("A_data"));
+   char fname[FNAME_SIZE];
+
+   create_symbolic_file_name(fname);
+   create_test_file(fname);
    int ret = dup(-1);
-   __gen_assert(dup_fails(ret));
+   __assert(dup_fails(ret));
 
    return 0;
 }

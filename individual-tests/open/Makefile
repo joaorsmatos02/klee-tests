@@ -4,7 +4,7 @@
 # ═══════════════════════════════════════════════════════════════
 
 CC       = clang
-CFLAGS   = -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include
+CFLAGS   = -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include -I../../include/klee
 KLEE     = klee
 KLEEOPTS = --posix-runtime --libc=uclibc
 # Tests create their own symbolic files through the API (__file_create),
@@ -21,7 +21,8 @@ TESTS = test_01 test_02 test_03 test_04 test_05 test_06 \
         test_31 test_32 test_33 test_34 test_35 test_36 \
         test_37 test_38 test_39 test_40 test_41 test_42 \
         test_43 test_44 test_45 test_46 test_47 test_48 \
-        test_49 test_50 test_51
+        test_49 test_50 test_51 test_52 test_53 test_54 \
+        test_55 test_56 test_57
 
 BCFILES = $(addsuffix .bc, $(TESTS))
 
