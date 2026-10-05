@@ -19,10 +19,13 @@
  **** FILE SETUP
  * ══════════════════════════════════════════════════════════════════════ */
 
-// File names are FNAME_BYTES symbolic bytes followed by '\0': 1 by default,
-// or N when compiled with -DFNAME_BYTES=N. Only the first byte is
-// constrained, to be non-null, so a name has between 1 and FNAME_BYTES
-// characters. Declare name buffers as char name[FNAME_SIZE].
+// File names are FNAME_BYTES bytes followed by '\0': 1 by default, or N when
+// compiled with -DFNAME_BYTES=N. Declare name buffers as char name[FNAME_SIZE].
+//
+// By default the bytes are symbolic, and only the first is constrained, to be
+// non-null, so a name has between 1 and FNAME_BYTES characters. Compiled with
+// -DCONCRETE_FNAME, they are concrete instead: a test's first name is "AA...",
+// its second "BB...", and so on, each FNAME_BYTES characters.
 #ifndef FNAME_BYTES
 #define FNAME_BYTES 1
 #endif
@@ -31,16 +34,26 @@
 // The size each test's file is created with
 #define TEST_FILE_SIZE 10
 
-// Fills `buf` with a symbolic file name. The symbolic bytes are labelled
-// after the variable: create_symbolic_file_name(fname) gives fname_0, ...
+// Fills `buf` with a file name, symbolic unless CONCRETE_FNAME is defined.
+// Symbolic bytes are labelled after the variable:
+// create_symbolic_file_name(fname) gives fname_0, ...
 #define create_symbolic_file_name(buf) create_symbolic_file_name_(buf, #buf)
 
 static void create_symbolic_file_name_(char *buf, char *label) {
     int i;
+#ifdef CONCRETE_FNAME
+    static int names = 0;
+    (void) label;
+    for (i = 0; i < FNAME_BYTES; i++)
+        buf[i] = (char) ('A' + names);
+    names++;
+    buf[FNAME_BYTES] = '\0';
+#else
     for (i = 0; i < FNAME_BYTES; i++)
         buf[i] = (char) __sym_var_array(label, i, 8);
     buf[FNAME_BYTES] = '\0';
     __assume(_NEQ_(buf[0], '\0'));
+#endif
 }
 
 // Creates the file `name`, of TEST_FILE_SIZE bytes
