@@ -11,12 +11,11 @@ int main(void) {
    int  flags;
 
    create_symbolic_file_name(fname);
-   flags = declare_symbolic_flags();
+   flags = O_RDONLY;
    create_test_file(fname);
    __assume(exists(fname));
    int cret = chmod(fname, 0666);
    __assert(chmod_succeeds(cret));
-   __assume(flags_equal(flags, O_RDONLY));
 
    int fd = open(fname, flags, 0);
    __assert(open_succeeds(fd));

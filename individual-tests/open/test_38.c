@@ -11,10 +11,9 @@ int main(void) {
    int  flags;
 
    create_symbolic_file_name(fname);
-   flags = declare_symbolic_flags();
+   flags = O_WRONLY;
    create_test_file(fname);
    __assume(exists(fname));
-   __assume(flags_equal(flags, O_WRONLY));
 
    int fd = open(fname, flags);
    __assert(open_succeeds(fd));

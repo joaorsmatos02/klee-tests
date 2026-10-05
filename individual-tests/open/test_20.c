@@ -11,11 +11,10 @@ int main(void) {
    int  flags;
 
    create_symbolic_file_name(fname);
-   flags = declare_symbolic_flags();
+   flags = O_NONBLOCK | O_RDONLY;
 
    create_test_file(fname);
    __assume(exists(fname));
-   __assume(flags_equal(flags, O_NONBLOCK | O_RDONLY));
 
    int fd = open(fname, flags);
 

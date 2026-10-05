@@ -152,11 +152,10 @@ int main(void) {
    int  flags;
 
    create_symbolic_file_name(fname);        // a symbolic name
-   flags = declare_symbolic_flags();
+   flags = O_RDONLY;
 
    create_test_file(fname);                 // the test creates its own file, under that name
    __assume(exists(fname));
-   __assume(flags_equal(flags, O_RDONLY));
 
    int fd = open(fname, flags);
 

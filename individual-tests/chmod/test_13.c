@@ -14,7 +14,7 @@ int main(void) {
    char fname[FNAME_SIZE];
    int  flags;
    create_symbolic_file_name(fname);
-   flags = declare_symbolic_flags();
+   flags = O_RDWR;
 
    create_test_file(fname);
    __assume(exists(fname));
@@ -22,7 +22,6 @@ int main(void) {
    int cret = chmod(fname, 0666);
    __assert(chmod_succeeds(cret));
 
-   __assume(flags_equal(flags, O_RDWR));
    int fd = open(fname, flags);
    __assert(open_succeeds(fd));
 

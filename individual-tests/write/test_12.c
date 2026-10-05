@@ -11,12 +11,11 @@ int main(void) {
    char other[FNAME_SIZE];
    int  flags;
    create_symbolic_file_name(fname);
-   flags = declare_symbolic_flags();
+   flags = O_CREAT | O_WRONLY;
 
    create_symbolic_file_name(other);
    create_test_file(other);
    __assume(not_exists(fname));
-   __assume(flags_equal(flags, O_CREAT | O_WRONLY));
 
    int fd = open(fname, flags, 0644);
    __assert(open_succeeds(fd));

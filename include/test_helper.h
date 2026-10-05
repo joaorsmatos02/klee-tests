@@ -25,9 +25,13 @@
 // By default the bytes are symbolic, and only the first is constrained, to be
 // non-null, so a name has between 1 and FNAME_BYTES characters. Compiled with
 // -DCONCRETE_FNAME, they are concrete instead: a test's first name is "AA...",
-// its second "BB...", and so on, each FNAME_BYTES characters.
+// its second "BB...", and so on, each FNAME_BYTES characters. Native runs
+// (-DNATIVE) always use concrete names.
 #ifndef FNAME_BYTES
 #define FNAME_BYTES 1
+#endif
+#if defined(NATIVE) && !defined(CONCRETE_FNAME)
+#define CONCRETE_FNAME
 #endif
 #define FNAME_SIZE (FNAME_BYTES + 1)
 
@@ -70,14 +74,6 @@ static cnstr_t exists(const char *fname) {
 
 static cnstr_t not_exists(const char *fname) {
     return _EQ_(__file_exists(fname), 0);
-}
-
-/* ══════════════════════════════════════════════════════════════════════
- **** SYMBOLIC VARIABLE SETUP
- * ══════════════════════════════════════════════════════════════════════ */
-
-static int declare_symbolic_flags(void) {
-    return (int) __sym_var_named("flags", 32);
 }
 
 /* ══════════════════════════════════════════════════════════════════════
