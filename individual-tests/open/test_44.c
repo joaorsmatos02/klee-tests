@@ -1,8 +1,8 @@
 /*
- * test_44.c - chmod(0222) then open O_RDONLY, passes (has_permission)
+ * test_44.c - chmod(0222) then open O_RDONLY fails (EACCES)
  *
- * Should fail with EACCES (no read bits). But has_permission never checks
- * read permission for O_RDONLY because flags & O_RDONLY is always 0.
+ * A file without read permission cannot be opened for reading. (KLEE lets
+ * it: its has_permission never checks read permission for O_RDONLY.)
  *
  * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_44.c
  * Run    : klee --posix-runtime --libc=uclibc test_44.bc
@@ -20,11 +20,8 @@ int main(void) {
    int cret = chmod(fname, 0222);
    __assert(chmod_succeeds(cret));
 
-   //This SHOULD fail but PASSES due to has_permission bug
    int fd = open(fname, flags);
-   __assert(open_succeeds(fd));
-
-   //printf("[PASS] BUG B04 confirmed: O_RDONLY bypasses read permission check\n");
+   __assert(open_fails(fd));
 
    cleanup_fd(fd);
    return 0;

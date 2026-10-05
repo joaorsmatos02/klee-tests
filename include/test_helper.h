@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/resource.h>
 
 #include "sra.h"
 
@@ -66,6 +67,21 @@ static void create_test_file(const char *name) {
     int fd = __file_open(name, "r+");
     __file_set_size(fd, TEST_FILE_SIZE);
     __file_close(fd);
+}
+
+// Creates the file `name`, as create_test_file, with permissions `mode`
+static void create_test_file_with_mode(const char *name, mode_t mode) {
+    create_test_file(name);
+    int fd = __file_open(name, "r");
+    __file_set_mode(fd, mode);
+    __file_close(fd);
+}
+
+// Limits the test to `n` descriptors, 0 to n - 1: past them, open and dup
+// fail with EMFILE, and dup2 with EBADF
+static void limit_fds(rlim_t n) {
+    struct rlimit limit = { n, n };
+    setrlimit(RLIMIT_NOFILE, &limit);
 }
 
 static cnstr_t exists(const char *fname) {

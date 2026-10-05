@@ -13,7 +13,7 @@ int main(void) {
    create_symbolic_file_name(fname);
    flags = O_RDONLY;
 
-   create_test_file(fname);
+   create_test_file_with_mode(fname, 0222);
    __assume(exists(fname));
 
    int fd = open(fname, flags);

@@ -1,8 +1,8 @@
 /*
- * test_47.c - Open fd table full, returns EMFILE?
+ * test_47.c - Open with the fd table full fails (EMFILE)
  *
- * KLEE has MAX_FDS=32. Fds 0,1,2 are stdin/stdout/stderr. fd 3 is our
- * open. dup to fill remaining 28 slots. Next open should fail EMFILE.
+ * The test limits itself to 32 descriptors. Fds 0, 1, 2 are stdin, stdout,
+ * stderr; fd 3 is our open; 28 dups fill fds 4 to 31. The next open fails.
  *
  * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_47.c
  * Run    : klee --posix-runtime --libc=uclibc test_47.bc
@@ -17,6 +17,7 @@ int main(void) {
    flags = O_RDONLY;
    create_test_file(fname);
    __assume(exists(fname));
+   limit_fds(32);
 
    int fd = open(fname, flags);
    __assert(open_succeeds(fd));

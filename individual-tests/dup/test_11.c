@@ -1,12 +1,10 @@
 /*
- * test_11.c - KLEE QUIRK: dup'd fds do NOT share offset
+ * test_11.c - dup'd fds share the file offset
  *
- * On a real kernel, dup'd fds share the same file offset, writing on one
- * advances the offset for both. KLEE does *f2 = *f which COPIES the offset
- * at dup time but doesn't link them. After dup, each fd has its own offset.
- *
- * Code comment: "XXX Incorrect, really we need another data structure
- * for open files"
+ * A dup'd fd refers to the same open file description, so writing through
+ * one advances the offset of both. (KLEE copies the offset at dup time
+ * instead: "XXX Incorrect, really we need another data structure for open
+ * files".)
  *
  * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_11.c
  * Run    : klee --posix-runtime --libc=uclibc test_11.bc
@@ -40,11 +38,9 @@ int main(void) {
    off_t pos3 = lseek(fd1, 0, SEEK_CUR);
    __assert(lseek_is(pos3, 5));
 
-   //KLEE QUIRK: fd2 offset is still 0 (not shared), on real kernel this would be 5
+   //the offset is shared, so fd2 is at 5 too
    off_t pos4 = lseek(fd2, 0, SEEK_CUR);
-   __assert(lseek_is(pos4, 0));
-
-   printf("[PASS] KLEE quirk confirmed: fd2 offset not shared with fd1\n");
+   __assert(lseek_is(pos4, 5));
 
    cleanup_fd(fd1);
    cleanup_fd(fd2);

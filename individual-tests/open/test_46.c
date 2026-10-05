@@ -1,5 +1,8 @@
 /*
- * test_46.c - Open with mode=0000 overwrites st_mode to 0000
+ * test_46.c - Open with mode=0000 leaves an existing file's st_mode unchanged
+ *
+ * chmod sets 0666; open without O_CREAT ignores its mode, so stat still
+ * shows 0666. (KLEE overwrites it with 0000.)
  *
  * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_46.c
  * Run    : klee --posix-runtime --libc=uclibc test_46.bc
@@ -20,9 +23,8 @@ int main(void) {
    int fd = open(fname, flags, 0);
    __assert(open_succeeds(fd));
 
-   //check if open clobbered permissions
-   __assert(perms_are(fd, 0000));
-   //printf("[PASS] BUG B05 confirmed: open(mode=0) overwrote chmod(0666)\n");
+   // open's mode only applies to a file it creates
+   __assert(perms_are(fd, 0666));
 
    cleanup_fd(fd);
 
