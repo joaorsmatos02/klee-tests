@@ -16,16 +16,16 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    off_t original_size = lseek(fd, 0, SEEK_END);
    printf("[info] original file size = %d\n", (int) __concretize(original_size));
 
    ssize_t wret = write(fd, "abc", 3);
-   __assert(write_all(wret, 3));
+   __sra_assert(write_all(wret, 3));
 
    off_t current = lseek(fd, 0, SEEK_CUR);
-   __assert(lseek_is(current, original_size + 3));
+   __sra_assert(lseek_is(current, original_size + 3));
 
    cleanup_fd(fd);
    return 0;

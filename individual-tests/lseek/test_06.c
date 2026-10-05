@@ -18,12 +18,12 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    lseek(fd, 7, SEEK_SET);
 
    off_t pos = lseek(fd, 0, SEEK_CUR);
-   __assert(lseek_is(pos, 7));
+   __sra_assert(lseek_is(pos, 7));
 
    cleanup_fd(fd);
    return 0;

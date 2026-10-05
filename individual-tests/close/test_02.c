@@ -16,10 +16,10 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    int cret = close(fd);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    return 0;
 }

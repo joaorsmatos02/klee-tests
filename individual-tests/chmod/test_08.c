@@ -16,10 +16,10 @@ int main(void) {
    __assume(exists(fname));
 
    int cret = chmod(fname, 0666);
-   __assert(chmod_succeeds(cret));
+   __sra_assert(chmod_succeeds(cret));
 
    int fd = open(fname, flags);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    cleanup_fd(fd);
    return 0;

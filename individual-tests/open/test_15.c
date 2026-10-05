@@ -16,9 +16,9 @@ int main(void) {
    create_test_file(fname);
    __assume(exists(fname));
 
-   int fd = open(fname, flags);
+   int fd = open(fname, flags, 0644);
 
-   __assert(open_fails(fd));
+   __sra_assert(open_fails(fd));
 
    cleanup_fd(fd);
    return 0;

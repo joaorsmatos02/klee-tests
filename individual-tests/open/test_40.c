@@ -16,10 +16,10 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    off_t pos = lseek(fd, 0, SEEK_CUR);
-   __assert(lseek_is(pos, 0));
+   __sra_assert(lseek_is(pos, 0));
 
    cleanup_fd(fd);
    return 0;

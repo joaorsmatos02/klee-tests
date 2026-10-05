@@ -18,11 +18,11 @@ int main(void) {
 
    int fd = open(fname, flags);
 
-   __assert(open_succeeds(fd));
-   __assert(fd_is(fd, 3));
+   __sra_assert(open_succeeds(fd));
+   __sra_assert(fd_is(fd, 3));
 
    int cret = close(fd);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    return 0;
 }

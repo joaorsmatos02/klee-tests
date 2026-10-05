@@ -16,10 +16,10 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    int fd2 = dup2(fd, 10);
-   __assert(dup2_returns(fd2, 10));
+   __sra_assert(dup2_returns(fd2, 10));
 
    cleanup_fd(fd);
    cleanup_fd(fd2);

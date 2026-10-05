@@ -17,15 +17,15 @@ int main(void) {
    __assume(exists(fname));
 
    int fd1 = open(fname, flags);
-   __assert(open_succeeds(fd1));
-   __assert(fd_is(fd1, 3));
+   __sra_assert(open_succeeds(fd1));
+   __sra_assert(fd_is(fd1, 3));
 
    int ret = close(fd1);
-   __assert(close_succeeds(ret));
+   __sra_assert(close_succeeds(ret));
 
    int fd2 = open(fname, flags);
-   __assert(open_succeeds(fd2));
-   __assert(fd_is(fd2, 3));
+   __sra_assert(open_succeeds(fd2));
+   __sra_assert(fd_is(fd2, 3));
 
    cleanup_fd(fd2);
    return 0;

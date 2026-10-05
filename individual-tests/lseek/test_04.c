@@ -18,14 +18,14 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    char skip[3] = {0};
    ssize_t rret = read(fd, skip, 3);
-   __assert(read_all(rret, 3));
+   __sra_assert(read_all(rret, 3));
 
    off_t pos = lseek(fd, 4, SEEK_CUR);
-   __assert(lseek_is(pos, 7));
+   __sra_assert(lseek_is(pos, 7));
 
    cleanup_fd(fd);
    return 0;

@@ -15,8 +15,8 @@ int main(void) {
    create_test_file(fname);
 
    int fd = __file_open(fname, "w+");
-   __assert(open_succeeds(fd));
-   __assert(flags_equal(__file_flags(fd), O_RDWR | O_CREAT | O_TRUNC));
+   __sra_assert(open_succeeds(fd));
+   __sra_assert(flags_equal(__file_flags(fd), O_RDWR | O_CREAT | O_TRUNC));
 
    __file_close(fd);
    return 0;

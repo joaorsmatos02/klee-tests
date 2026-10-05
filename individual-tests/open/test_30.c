@@ -14,12 +14,12 @@ int main(void) {
    __assume(exists(fname));
 
    int fd1 = open(fname, O_RDWR);
-   __assert(open_succeeds(fd1));
+   __sra_assert(open_succeeds(fd1));
    int cret = close(fd1);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    int fd2 = open(fname, O_RDONLY);
-   __assert(open_succeeds(fd2));
+   __sra_assert(open_succeeds(fd2));
 
    cleanup_fd(fd2);
    return 0;

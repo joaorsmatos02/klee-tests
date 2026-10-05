@@ -16,10 +16,10 @@ any one engine's command line.
 
   make run_all
 
-Expected on the current fork, for the first 127 tests: 102 passed, 25 failed.
-open/test_52 to test_57 were added later, and have no recorded result yet.
-The 25 failures are real defects in KLEE's POSIX summaries, not broken
-tests. See issues/klee_posix_findings.xlsx.
+Expected on the current fork: 59 passed, 74 failed, out of 133.
+Every test passes when run natively on Linux, so the failures are KLEE's:
+see docs/notes/klee.md in SummBoundVerify. (issues/klee_posix_findings.xlsx
+records the defects found by the earlier version of the suite.)
 
 
 -------------------------------------------------------------------------------
@@ -69,18 +69,16 @@ output directory. Totals are given per suite and overall.
  HOW PASS AND FAIL ARE DECIDED
 -------------------------------------------------------------------------------
 
-A test FAILS when KLEE reports:
+__sra_assert(c) is a symbolic assertion: it holds only if the path
+condition implies c, so it must hold on every path. A test FAILS if:
 
-  KLEE: done: completed paths = 0
+  - any path fails an __sra_assert (KLEE's "ASSERTION FAIL"), or hits any
+    other KLEE error, such as a memory error; or
+  - no path completes: the test's __assume() preconditions never hold.
 
-meaning no input satisfying the test's __assume() constraints also satisfies
-its __assert() assertions, so the behaviour the test describes is not
-reachable at all. Anything else is a PASS.
-
-Note this is deliberately not "did any path hit an assertion". With a
-symbolic file, KLEE legitimately explores permission configurations in which
-the operation under test is supposed to be refused, so an assertion failing
-on some path is expected and is not by itself a defect.
+A path ended by an __assume that cannot hold there ("invalid klee_assume
+call (provably false)") is not a failure: the __assume excludes that path's
+inputs. Anything else is a PASS. scripts/verdict.sh applies the rule.
 
 
 -------------------------------------------------------------------------------

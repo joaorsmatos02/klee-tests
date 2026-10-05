@@ -13,7 +13,7 @@ int main(void) {
    create_test_file(fname);
    char buf[5] = {0};
    ssize_t rret = read(-1, buf, 5);
-   __assert(read_error(rret));
+   __sra_assert(read_error(rret));
 
    return 0;
 }

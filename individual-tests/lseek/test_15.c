@@ -19,15 +19,15 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    ssize_t wret = write(fd, "test", 4);
-   __assert(write_all(wret, 4));
+   __sra_assert(write_all(wret, 4));
 
    off_t pos1 = lseek(fd, 0, SEEK_SET);
-   __assert(lseek_is(pos1, 0));
+   __sra_assert(lseek_is(pos1, 0));
    off_t pos2 = lseek(fd, 0, SEEK_END);
-   __assert(lseek_is(pos2, 4));
+   __sra_assert(lseek_is(pos2, 4));
 
    cleanup_fd(fd);
    return 0;

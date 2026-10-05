@@ -16,11 +16,11 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    //at the moment 5 since msot of our tests have size 10
    off_t pos = lseek(fd, 5, SEEK_SET);
-   __assert(lseek_is(pos, 5));
+   __sra_assert(lseek_is(pos, 5));
 
    cleanup_fd(fd);
    return 0;

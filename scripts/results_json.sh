@@ -5,8 +5,8 @@
 #
 # Each argument is a suite ("open") or a single test in it ("open_12").
 #
-# A test fails when KLEE reports "completed paths = 0", the same rule the
-# Makefiles apply, so the JSON always agrees with the usual output.
+# A test passes or fails by scripts/verdict.sh, the same rule the Makefiles
+# apply, so the JSON always agrees with the usual output.
 
 cd "$(dirname "$0")/.." || exit 1
 
@@ -43,10 +43,10 @@ for arg in "$@"; do
         completed=$(done_count 'completed paths' "$outdir.log")
         partial=$(done_count 'partially completed paths' "$outdir.log")
         generated=$(done_count 'generated tests' "$outdir.log")
-        if [ "$completed" = 0 ]; then
-            result=fail; s_failed=$((s_failed + 1))
-        else
+        if sh scripts/verdict.sh "$outdir.log" >/dev/null; then
             result=pass; s_passed=$((s_passed + 1))
+        else
+            result=fail; s_failed=$((s_failed + 1))
         fi
         s_total=$((s_total + 1))
         tests_json="$tests_json${tests_json:+,$nl}        {\"suite\": \"$suite\", \"test\": \"$t\", \"result\": \"$result\", \"completed_paths\": $completed, \"partially_completed_paths\": $partial, \"generated_tests\": $generated, \"output_dir\": \"$outdir\"}"

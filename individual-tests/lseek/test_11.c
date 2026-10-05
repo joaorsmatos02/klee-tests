@@ -14,7 +14,7 @@ int main(void) {
    create_symbolic_file_name(fname);
    create_test_file(fname);
    off_t pos = lseek(-1, 0, SEEK_SET);
-   __assert(lseek_fails(pos));
+   __sra_assert(lseek_fails(pos));
 
    return 0;
 }

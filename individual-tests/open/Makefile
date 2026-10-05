@@ -64,9 +64,9 @@ run: compile
 		echo "$(WHITE)  ▶ $$t $(DIM)(API-created symbolic file)$(RESET)"; \
 		echo "$(YELLOW)───────────────────────────────────────────────────────────$(RESET)"; \
 		$(KLEE) $(KLEEOPTS) --output-dir="$$outdir" $$t.bc $(SYMFILES) 2>&1 | tee "$$logfile"; \
-		if grep -q "^KLEE: done: completed paths = 0" "$$logfile"; then \
+		if ! why=$$(sh ../../scripts/verdict.sh "$$logfile"); then \
 			echo ""; \
-			echo "  $(BG_RED) FAIL $(RESET) $$t (0 completed paths - no input satisfies the asserts/assumes)"; \
+			echo "  $(BG_RED) FAIL $(RESET) $$t ($$why)"; \
 			failed=$$((failed+1)); \
 			failed_list="$$failed_list $$t"; \
 		else \
@@ -103,9 +103,9 @@ run_%: test_%.bc
 	echo "$(WHITE)  ▶ test_$* $(DIM)(API-created symbolic file)$(RESET)"; \
 	echo "$(YELLOW)───────────────────────────────────────────────────────────$(RESET)"; \
 	$(KLEE) $(KLEEOPTS) --output-dir="$$outdir" $< $(SYMFILES) 2>&1 | tee "$$logfile"; \
-	if grep -q "^KLEE: done: completed paths = 0" "$$logfile"; then \
+	if ! why=$$(sh ../../scripts/verdict.sh "$$logfile"); then \
 		echo ""; \
-		echo "  $(BG_RED) FAIL $(RESET) test_$* (0 completed paths - no input satisfies the asserts/assumes)"; \
+		echo "  $(BG_RED) FAIL $(RESET) test_$* ($$why)"; \
 	else \
 		echo ""; \
 		echo "  $(BG_GREEN) PASS $(RESET) test_$*"; \

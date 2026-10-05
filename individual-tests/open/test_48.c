@@ -16,9 +16,9 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
-   __assert(buffers_match(fname, "A", 1));
+   __sra_assert(buffers_match(fname, "A", 1));
    debug_name(fname);
 
    cleanup_fd(fd);

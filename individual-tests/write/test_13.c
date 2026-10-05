@@ -16,22 +16,22 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    char wbuf[] = "xyz";
    ssize_t wret = write(fd, wbuf, 3);
-   __assert(write_all(wret, 3));
+   __sra_assert(write_all(wret, 3));
 
    lseek(fd, 0, SEEK_SET);
 
    char rbuf[3] = {0};
    ssize_t rret = read(fd, rbuf, 3);
-   __assert(read_all(rret, 3));
-   __assert(buffers_match(wbuf, rbuf, 3));
+   __sra_assert(read_all(rret, 3));
+   __sra_assert(buffers_match(wbuf, rbuf, 3));
 
    char extra[1] = {0};
    ssize_t ret = read(fd, extra, 1);
-   __assert(read_all(ret, 0));
+   __sra_assert(read_all(ret, 0));
 
    cleanup_fd(fd);
    return 0;

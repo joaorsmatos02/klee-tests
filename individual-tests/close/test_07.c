@@ -16,13 +16,13 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    int cret = close(fd);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    ssize_t wret = write(fd, "hello", 5);
-   __assert(write_error(wret));
+   __sra_assert(write_error(wret));
 
    return 0;
 }

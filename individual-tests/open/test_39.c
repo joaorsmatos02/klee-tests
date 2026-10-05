@@ -16,17 +16,17 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    lseek(fd, 0, SEEK_SET);
    ssize_t wret = write(fd, "hello", 5);
-   __assert(write_all(wret, 5));
+   __sra_assert(write_all(wret, 5));
 
    lseek(fd, 0, SEEK_SET);
    char buf[5] = {0};
    ssize_t rret = read(fd, buf, 5);
-   __assert(read_all(rret, 5));
-   __assert(buffers_match("hello", buf, 5));
+   __sra_assert(read_all(rret, 5));
+   __sra_assert(buffers_match("hello", buf, 5));
 
    cleanup_fd(fd);
    return 0;

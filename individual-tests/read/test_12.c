@@ -16,16 +16,16 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    ssize_t wret = write(fd, "abcdef", 6);
-   __assert(write_all(wret, 6));
+   __sra_assert(write_all(wret, 6));
    lseek(fd, 3, SEEK_SET);
 
    char buf[3] = {0};
    ssize_t rret = read(fd, buf, 3);
-   __assert(read_all(rret, 3));
-   __assert(buffers_match("def", buf, 3));
+   __sra_assert(read_all(rret, 3));
+   __sra_assert(buffers_match("def", buf, 3));
 
    cleanup_fd(fd);
    return 0;

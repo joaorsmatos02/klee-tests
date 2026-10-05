@@ -18,7 +18,7 @@ int main(void) {
 
    int fd = open(fname, flags);
 
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    cleanup_fd(fd);
    return 0;

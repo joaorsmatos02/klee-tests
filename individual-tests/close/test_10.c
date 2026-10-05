@@ -19,18 +19,18 @@ int main(void) {
    __assume(exists(fname));
 
    int fd1 = open(fname, flags, 0);
-   __assert(open_succeeds(fd1));
+   __sra_assert(open_succeeds(fd1));
 
    int fd2 = open(fname, O_RDONLY, 0);
-   __assert(open_succeeds(fd2));
+   __sra_assert(open_succeeds(fd2));
 
    int cret = close(fd1);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    //fd2 should still work
    char buf[5] = {0};
    ssize_t rret = read(fd2, buf, 5);
-   __assert(read_all(rret, 5));
+   __sra_assert(read_all(rret, 5));
 
    cleanup_fd(fd2);
    return 0;

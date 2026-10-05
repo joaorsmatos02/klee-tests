@@ -18,13 +18,13 @@ int main(void) {
    create_test_file(fname);
    __assume(exists(fname));
    int cret = chmod(fname, 0666);
-   __assert(chmod_succeeds(cret));
+   __sra_assert(chmod_succeeds(cret));
 
    int fd = open(fname, flags, 0);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    // open's mode only applies to a file it creates
-   __assert(perms_are(fd, 0666));
+   __sra_assert(perms_are(fd, 0666));
 
    cleanup_fd(fd);
 

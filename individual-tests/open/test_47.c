@@ -20,7 +20,7 @@ int main(void) {
    limit_fds(32);
 
    int fd = open(fname, flags);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    //fill all remaining fd slots with dup
    int last_dup = -1;
@@ -31,7 +31,7 @@ int main(void) {
 
    //next open should fail EMFILE
    int fd_full = open(fname, O_RDONLY);
-   __assert(open_fails(fd_full));
+   __sra_assert(open_fails(fd_full));
 
    //cleanup all fds
    for (int i = 3; i < 32; i++) close(i);

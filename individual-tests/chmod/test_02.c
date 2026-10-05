@@ -16,7 +16,7 @@ int main(void) {
    __assume(not_exists(fname));
 
    int cret = chmod(fname, 0644);
-   __assert(chmod_fails(cret));
+   __sra_assert(chmod_fails(cret));
 
    return 0;
 }

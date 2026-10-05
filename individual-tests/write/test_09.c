@@ -16,21 +16,21 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    char wbuf[] = "world";
    ssize_t wret = write(fd, wbuf, 5);
-   __assert(write_all(wret, 5));
+   __sra_assert(write_all(wret, 5));
    cleanup_fd(fd);
 
    //flags still symbolic?
    int fd2 = open(fname, O_RDONLY, 0644);
-   __assert(open_succeeds(fd2));
+   __sra_assert(open_succeeds(fd2));
 
    char rbuf[5] = {0};
    ssize_t rret = read(fd2, rbuf, 5);
-   __assert(read_all(rret, 5));
-   __assert(buffers_match(wbuf, rbuf, 5));
+   __sra_assert(read_all(rret, 5));
+   __sra_assert(buffers_match(wbuf, rbuf, 5));
 
    cleanup_fd(fd2);
    return 0;

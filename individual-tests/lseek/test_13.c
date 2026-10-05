@@ -19,29 +19,29 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    lseek(fd, 0, SEEK_SET);
    ssize_t wret = write(fd, "abcdef", 6);
-   __assert(write_all(wret, 6));
+   __sra_assert(write_all(wret, 6));
 
    lseek(fd, 0, SEEK_SET);
    char buf0[1] = {0};
    ssize_t rret0 = read(fd, buf0, 1);
-   __assert(read_all(rret0, 1));
-   __assert(buffers_match("a", buf0, 1));
+   __sra_assert(read_all(rret0, 1));
+   __sra_assert(buffers_match("a", buf0, 1));
 
    lseek(fd, 2, SEEK_SET);
    char buf1[1] = {0};
    ssize_t rret1 = read(fd, buf1, 1);
-   __assert(read_all(rret1, 1));
-   __assert(buffers_match("c", buf1, 1));
+   __sra_assert(read_all(rret1, 1));
+   __sra_assert(buffers_match("c", buf1, 1));
 
    lseek(fd, 5, SEEK_SET);
    char buf2[1] = {0};
    ssize_t rret2 = read(fd, buf2, 1);
-   __assert(read_all(rret2, 1));
-   __assert(buffers_match("f", buf2, 1));
+   __sra_assert(read_all(rret2, 1));
+   __sra_assert(buffers_match("f", buf2, 1));
 
    cleanup_fd(fd);
    return 0;

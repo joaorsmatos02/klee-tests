@@ -19,11 +19,11 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    int newfd = (int) __concretize(fd);
    int ret = dup2(fd, newfd);
-   __assert(dup2_returns(ret, newfd));
+   __sra_assert(dup2_returns(ret, newfd));
 
    cleanup_fd(fd);
    return 0;

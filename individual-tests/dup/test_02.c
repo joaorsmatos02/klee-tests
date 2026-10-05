@@ -12,7 +12,7 @@ int main(void) {
    create_symbolic_file_name(fname);
    create_test_file(fname);
    int ret = dup(-1);
-   __assert(dup_fails(ret));
+   __sra_assert(dup_fails(ret));
 
    return 0;
 }

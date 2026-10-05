@@ -11,8 +11,8 @@
 FROM klee/klee:3.1
 
 # Which revisions to build. Override to pin an exact commit, for example:
-#   docker build --build-arg FORK_REF=40b3b74 -t klee-fsapi .
-ARG FORK_REF=api_klee
+#   docker build --build-arg FORK_REF=<full commit hash> -t klee-fsapi .
+ARG FORK_REF=shared-testsuite
 ARG TESTS_REF=main
 ARG FORK_REPO=https://github.com/dino-fan777/klee.git
 ARG TESTS_REPO=https://github.com/dino-fan777/klee-tests.git

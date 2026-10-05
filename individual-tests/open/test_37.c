@@ -16,11 +16,11 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    char buf[5] = {0};
    ssize_t rret = read(fd, buf, 5);
-   __assert(read_all(rret, 5));
+   __sra_assert(read_all(rret, 5));
 
    cleanup_fd(fd);
    return 0;

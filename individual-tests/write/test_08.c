@@ -16,19 +16,19 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    char wbuf[] = "hello";
    ssize_t wret = write(fd, wbuf, 5);
-   __assert(write_all(wret, 5));
+   __sra_assert(write_all(wret, 5));
 
    off_t pos = lseek(fd, 0, SEEK_SET);
-   __assert(lseek_is(pos, 0));
+   __sra_assert(lseek_is(pos, 0));
 
    char rbuf[5] = {0};
    ssize_t rret = read(fd, rbuf, 5);
-   __assert(read_all(rret, 5));
-   __assert(buffers_match(wbuf, rbuf, 5));
+   __sra_assert(read_all(rret, 5));
+   __sra_assert(buffers_match(wbuf, rbuf, 5));
 
    cleanup_fd(fd);
    return 0;

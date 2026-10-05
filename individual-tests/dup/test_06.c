@@ -20,10 +20,10 @@ int main(void) {
    limit_fds(32);
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    int ret = dup2(fd, 32);
-   __assert(dup2_fails(ret));
+   __sra_assert(dup2_fails(ret));
 
    cleanup_fd(fd);
    return 0;

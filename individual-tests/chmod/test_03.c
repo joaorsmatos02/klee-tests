@@ -17,14 +17,14 @@ int main(void) {
    __assume(exists(fname));
 
    int cret = chmod(fname, 0644);
-   __assert(chmod_succeeds(cret));
+   __sra_assert(chmod_succeeds(cret));
 
    int fd_r = open(fname, O_RDONLY);
-   __assert(open_succeeds(fd_r));
+   __sra_assert(open_succeeds(fd_r));
    cleanup_fd(fd_r);
 
    int fd_w = open(fname, O_WRONLY);
-   __assert(open_succeeds(fd_w));
+   __sra_assert(open_succeeds(fd_w));
    cleanup_fd(fd_w);
 
    return 0;

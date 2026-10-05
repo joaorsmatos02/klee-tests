@@ -14,10 +14,10 @@ int main(void) {
    __assume(exists(fname));
 
    int fd1 = open(fname, O_RDONLY);
-   __assert(open_succeeds(fd1));
+   __sra_assert(open_succeeds(fd1));
 
    int fd2 = open(fname, O_RDWR);
-   __assert(open_succeeds(fd2));
+   __sra_assert(open_succeeds(fd2));
 
    cleanup_fd(fd1);
    cleanup_fd(fd2);

@@ -18,13 +18,13 @@ int main(void) {
    __assume(exists(fname));
 
    int cret1 = chmod(fname, 0777);
-   __assert(chmod_succeeds(cret1));
+   __sra_assert(chmod_succeeds(cret1));
 
    int cret2 = chmod(fname, 0444);
-   __assert(chmod_succeeds(cret2));
+   __sra_assert(chmod_succeeds(cret2));
 
    int fd = open(fname, O_WRONLY);
-   __assert(open_fails(fd));
+   __sra_assert(open_fails(fd));
    cleanup_fd(fd);
 
    return 0;

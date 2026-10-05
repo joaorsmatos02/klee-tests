@@ -14,7 +14,7 @@ int main(void) {
    create_symbolic_file_name(fname);
    create_test_file(fname);
    int cret = close(-1);
-   __assert(close_fails(cret));
+   __sra_assert(close_fails(cret));
 
    return 0;
 }

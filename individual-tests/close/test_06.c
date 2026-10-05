@@ -16,14 +16,14 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    int cret = close(fd);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    char buf[5] = {0};
    ssize_t rret = read(fd, buf, 5);
-   __assert(read_error(rret));
+   __sra_assert(read_error(rret));
 
     return 0;
 }

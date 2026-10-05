@@ -18,18 +18,18 @@ int main(void) {
 
    int fd1 = open(fname, flags);
 
-   __assert(open_succeeds(fd1));
-   __assert(fd_is(fd1, 3));
+   __sra_assert(open_succeeds(fd1));
+   __sra_assert(fd_is(fd1, 3));
 
    int fd2 = dup(fd1);
-   __assert(dup_is_new(fd2, fd1));
+   __sra_assert(dup_is_new(fd2, fd1));
 
-   __assert(fd_is(fd2, 4));
+   __sra_assert(fd_is(fd2, 4));
 
    int cret = close(fd2);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
    cret = close(fd1);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    return 0;
 }

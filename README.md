@@ -13,22 +13,24 @@ internals.
 | `lseek` | 15 | |
 | `chmod` | 13 | |
 | `dup` / `dup2` | 13 | |
-| **Total** | **133** | 102 pass, 25 fail (of the first 127) |
+| **Total** | **133** | 59 pass, 74 fail |
 
-Defects found are in `issues/klee_posix_findings.xlsx`. For what each test
-does, see the spreadsheet in its `individual-tests/` folder. For example, the `open` folder has the `open_results` which explain each test.
+Run natively on Linux every test passes, so each failure on an engine is
+that engine's defect. The defects found by the earlier version of the suite
+are in `issues/klee_posix_findings.xlsx`, and the spreadsheet in each
+`individual-tests/` folder explains its tests.
 
 ## Requires the KLEE fork
 
 > **This suite does not run on stock KLEE.**
 
 The tests are written against a shared file-system API, the `__` functions
-(`__file_create`, `__file_exists`, `__assume`, `__assert`, `__file_offset`,
+(`__file_create`, `__file_exists`, `__assume`, `__sra_assert`, `__file_offset`,
 `__is_sat`, `__is_certain` and others) and the `_EQ_`-style constraints, so
 the same tests run on other engines too. Each engine provides the API as
 `sra.h`. Stock KLEE does not provide it; the fork does:
 
-* **[github.com/dino-fan777/klee](https://github.com/dino-fan777/klee)**, branch **`api_klee`**
+* **[github.com/dino-fan777/klee](https://github.com/dino-fan777/klee)**, branch **`shared-testsuite`**
 
 ## Quickest way to run them
 
@@ -45,7 +47,7 @@ docker run -it --rm klee-fsapi
 It opens in `/home/klee/klee-tests` and prints the usage notes on entry. Then:
 
 ```bash
-make run_all            # all 133 tests; of the first 127, expect 102 passed / 25 failed
+make run_all            # all 133 tests; expect 59 passed / 74 failed
 make run_open           # one system call
 make run_open_12        # one test
 ```
@@ -77,7 +79,7 @@ Totals are given per suite and overall.
 
 ### Pinning exact revisions
 
-By default the image is built from the tip of the fork's `api_klee` branch
+By default the image is built from the tip of the fork's `shared-testsuite` branch
 and of this repository's `main`. That means two builds run on different days
 can produce different images, because either branch may have moved in
 between.
@@ -86,8 +88,8 @@ To get a build that can be reproduced exactly, name the commits instead:
 
 ```bash
 docker build \
-  --build-arg FORK_REF=40b3b74109094e5930ee06eb9f948f02dbfc8e01 \
-  --build-arg TESTS_REF=4788115fa49ed56ea52ac5979e4a0eaa86184d6b \
+  --build-arg FORK_REF=<full fork commit hash> \
+  --build-arg TESTS_REF=<full commit hash of this repository> \
   -t klee-fsapi .
 ```
 
@@ -127,20 +129,22 @@ workflow.txt        how to run the tests, and how to read the results
 
 ## How a test is judged
 
-A test **fails** when KLEE reports:
+`__sra_assert(c)` is a symbolic assertion: it holds only if the path
+condition implies `c`, so it must hold on every path. A test **fails** if:
 
-```
-KLEE: done: completed paths = 0
-```
+- any path fails an `__sra_assert` (KLEE's `ASSERTION FAIL`), or hits any
+  other KLEE error, such as a memory error; or
+- no path completes: the test's `__assume()` preconditions never hold.
 
-No input satisfying the test's `__assume()` constraints also satisfies its
-`__assert()` assertions, so the behaviour it describes is unreachable.
-Anything else passes.
+A path ended by an `__assume` that cannot hold there (`invalid klee_assume
+call (provably false)`) is not a failure: the `__assume` excludes that path's
+inputs, as it is meant to. `scripts/verdict.sh` applies this rule, for the
+Makefiles and `make json_*` alike.
 
-This is deliberately not "did any path hit an assertion". With a symbolic
-file, the engine legitimately explores permission configurations in which the
-operation under test is supposed to be refused, so an assertion failing on
-*some* path is expected and is not by itself a defect.
+This is the rule summbv applies too. On KLEE, a file created by
+`__file_create` has a symbolic `stat`, so its permissions are symbolic: on
+paths where they refuse the operation a test performs, its `__sra_assert`
+fails.
 
 ## What a test looks like
 
@@ -159,10 +163,10 @@ int main(void) {
 
    int fd = open(fname, flags);
 
-   __assert(open_succeeds(fd));
-   __assert(fd_is(fd, 3));
+   __sra_assert(open_succeeds(fd));
+   __sra_assert(fd_is(fd, 3));
 
-   __assert(close_succeeds(close(fd)));
+   __sra_assert(close_succeeds(close(fd)));
    return 0;
 }
 ```

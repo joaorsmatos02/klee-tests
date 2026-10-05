@@ -16,13 +16,13 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    int cret = close(fd);
-   __assert(close_succeeds(cret));
+   __sra_assert(close_succeeds(cret));
 
    off_t pos = lseek(fd, 0, SEEK_SET);
-   __assert(lseek_fails(pos));
+   __sra_assert(lseek_fails(pos));
 
    return 0;
 }

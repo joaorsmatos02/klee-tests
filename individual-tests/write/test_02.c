@@ -16,10 +16,10 @@ int main(void) {
    __assume(exists(fname));
 
    int fd = open(fname, flags, 0644);
-   __assert(open_succeeds(fd));
+   __sra_assert(open_succeeds(fd));
 
    ssize_t wret = write(fd, "hello", 5);
-   __assert(write_all(wret, 5));
+   __sra_assert(write_all(wret, 5));
 
    cleanup_fd(fd);
    return 0;

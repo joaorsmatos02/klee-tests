@@ -19,20 +19,20 @@ int main(void) {
    __assume(exists(fname));
 
    int fd1 = open(fname, flags, 0644);
-   __assert(open_succeeds(fd1));
+   __sra_assert(open_succeeds(fd1));
 
    int fd2 = open(fname, flags, 0644);
-   __assert(open_succeeds(fd2));
+   __sra_assert(open_succeeds(fd2));
 
    //dup2 overwrites fd2 with fd1, closes old fd2 first
    int newfd = (int) __concretize(fd2);
    int dret = dup2(fd1, newfd);
-   __assert(dup2_returns(dret, newfd));
+   __sra_assert(dup2_returns(dret, newfd));
 
    //fd2 should still work (now a copy of fd1)
    char buf[5] = {0};
    ssize_t rret = read(fd2, buf, 5);
-   __assert(read_all(rret, 5));
+   __sra_assert(read_all(rret, 5));
 
    cleanup_fd(fd1);
    cleanup_fd(fd2);
