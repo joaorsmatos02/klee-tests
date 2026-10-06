@@ -154,4 +154,4 @@ run_dup_%:
 # only the JSON in the file, while the progress still shows in the terminal.
 json_%:
 	@$(MAKE) --no-print-directory run_$* >&2
-	@sh scripts/results_json.sh $(if $(filter all,$*),$(SUITES),$*)
+	@sh scripts/json-results.sh $(if $(filter all,$*),$(SUITES),$*)

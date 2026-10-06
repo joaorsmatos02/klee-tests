@@ -22,7 +22,7 @@ ARG TESTS_REPO=https://github.com/dino-fan777/klee-tests.git
 # Ubuntu repositories that actually matter, hence the "|| true".
 USER root
 RUN apt-get update -qq || true \
- && apt-get install -y --no-install-recommends git \
+ && apt-get install -y --no-install-recommends git jq \
  && rm -rf /var/lib/apt/lists/*
 
 USER klee

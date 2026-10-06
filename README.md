@@ -60,7 +60,8 @@ editing the fork.
 
 Every `run_*` target has a `json_*` counterpart that runs the same tests,
 then prints the results as JSON on stdout while the usual output goes to
-stderr:
+stderr. `scripts/json-results.sh` writes the JSON with `jq`, which the image
+installs:
 
 ```bash
 make json_all > results.json
@@ -122,7 +123,8 @@ include/klee/       sra.h, the shared API for KLEE, from the fork's klee/file_ap
 individual-tests/   one folder per system call, each with its results spreadsheet
 issues/             klee_posix_findings.xlsx, the defects the suite found
 docker/             rebuild_posix.sh and rebuild_all.sh, used by the image
-scripts/            results_json.sh, which turns a run's logs into JSON
+scripts/            verdict.sh, which judges a test from its log, and
+                    json-results.sh, which turns a run's logs into JSON
 Dockerfile          builds the fork and this suite into a ready-to-run image
 workflow.txt        how to run the tests, and how to read the results
 ```
