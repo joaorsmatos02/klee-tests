@@ -111,21 +111,17 @@ Useful things inside the output directory:
  CHANGING THE ENGINE
 -------------------------------------------------------------------------------
 
-The fork is at /home/klee/klee_fork. After editing it:
+The image is built from the fork (dino-fan777/klee), passed as the "fork"
+build context. After editing a local checkout of it, rebuild the image from
+the host, then start a new container:
 
-  ~/rebuild_posix.sh      runtime/POSIX only. Seconds.
-                          Use for fd.c, fd.h, fd_init.c, file_api.c,
-                          include/klee/file_api.h
+  docker build -t klee-tests --build-context fork=<checkout> .
 
-  ~/rebuild_all.sh        runtime and core C++. Minutes.
-                          Needed for SpecialFunctionHandler.cpp/.h and
-                          include/klee/klee.h, because klee_is_sat and
-                          klee_is_certain are compiled into the binary
-                          rather than into the runtime bitcode.
+Docker's cache keeps it to recompiling what changed.
 
 One knob worth knowing: the size of a created symbolic file is
 
-  SYM_FILE_DEFAULT_SIZE in klee_fork/runtime/POSIX/file_api.c   (10 bytes)
+  SYM_FILE_DEFAULT_SIZE in the fork's runtime/POSIX/file_api.c   (10 bytes)
 
 Changing it breaks tests that assert values derived from it, among them
 lseek test_07 (SEEK_END == 10), lseek test_08 (-3 from the end == 7) and

@@ -1,65 +1,42 @@
-# Tool-independent file-system test suite for symbolic execution engines,
-# running against a KLEE fork that implements the file-system API.
+# KLEE built with the fork that implements the suite's file-system API. The
+# image holds KLEE only: the suite is mounted when it runs.
 #
-# Build:  docker build -t klee-fsapi .
-# Run:    docker run -it --rm klee-fsapi
+# The fork's source is passed as the "fork" build context, either a local
+# checkout or the fork on GitHub:
 #
-# The suite does NOT work on stock KLEE. It needs the API primitives
-# (__file_create, file_exists, __assume, __gen_assert, ...) that the fork
-# adds to KLEE's POSIX runtime, so the image builds that fork from source.
+#   docker build -t klee-tests --build-context fork=$HOME/klee .
+#   docker build -t klee-tests --build-context fork=https://github.com/dino-fan777/klee.git#shared-testsuite .
+#
+# Then run the suite in it:
+#
+#   docker run -it --rm -v "$PWD":/home/klee/klee-tests klee-tests
 
 FROM klee/klee:3.1
 
-# Which revisions to build. Override to pin an exact commit, for example:
-#   docker build --build-arg FORK_REF=<full commit hash> -t klee-fsapi .
-ARG FORK_REF=shared-testsuite
-ARG TESTS_REF=main
-ARG FORK_REPO=https://github.com/dino-fan777/klee.git
-ARG TESTS_REPO=https://github.com/dino-fan777/klee-tests.git
-
-# git is not in the base image. The kitware apt source ships an expired key,
-# which makes "apt-get update" report an error while still refreshing the
-# Ubuntu repositories that actually matter, hence the "|| true".
+# jq, for the JSON results. The base image's kitware apt source has an expired
+# key, so "apt-get update" reports an error but still updates Ubuntu's.
 USER root
-RUN apt-get update -qq || true \
- && apt-get install -y --no-install-recommends git jq \
+RUN (apt-get update -qq || true) \
+ && apt-get install -y --no-install-recommends jq \
  && rm -rf /var/lib/apt/lists/*
-
 USER klee
-WORKDIR /home/klee
 
-# Invalidate the cache when either ref moves. Without this, Docker reuses the
-# fetch layer below because its text never changes, so rebuilding after a push
-# silently produces an image built from the OLD commits. These two files record
-# the current head of each ref, and change whenever it does.
-ADD https://api.github.com/repos/dino-fan777/klee/commits/${FORK_REF} /tmp/.fork_ref.json
-ADD https://api.github.com/repos/dino-fan777/klee-tests/commits/${TESTS_REF} /tmp/.tests_ref.json
-
-# Fetched rather than cloned, because "git clone --branch" only accepts a
-# branch or tag, so it cannot pin a commit. Fetching the ref directly works
-# for branches, tags and full 40-character commit hashes alike. Abbreviated
-# hashes are not accepted by the protocol, so FORK_REF and TESTS_REF must be
-# given in full when pinning a commit.
-RUN mkdir klee_fork klee-tests \
- && cd /home/klee/klee_fork \
- && git init -q && git remote add origin "${FORK_REPO}" \
- && git fetch -q --depth 1 origin "${FORK_REF}" && git checkout -q FETCH_HEAD \
- && cd /home/klee/klee-tests \
- && git init -q && git remote add origin "${TESTS_REPO}" \
- && git fetch -q --depth 1 origin "${TESTS_REF}" && git checkout -q FETCH_HEAD
-
-COPY --chown=klee:klee docker/rebuild_posix.sh docker/rebuild_all.sh /home/klee/
-COPY --chown=klee:klee workflow.txt /home/klee/workflow.txt
-
-# Build the fork into the base image's existing KLEE tree. rebuild_all.sh is
-# used rather than rebuild_posix.sh because the fork also changes the core
-# C++: klee_is_sat and klee_is_certain live in SpecialFunctionHandler and are
-# compiled into the klee binary, not into the runtime bitcode.
-RUN chmod +x /home/klee/rebuild_posix.sh /home/klee/rebuild_all.sh \
- && /home/klee/rebuild_all.sh
+# Copy the files the fork changes over KLEE 3.1's source, and rebuild KLEE.
+# The base image has KLEE already built, so only these files recompile.
+COPY --from=fork --chown=klee:klee \
+     /runtime/POSIX/fd.c /runtime/POSIX/fd.h /runtime/POSIX/fd_init.c \
+     /runtime/POSIX/file_api.c /runtime/POSIX/CMakeLists.txt \
+     /tmp/klee_src/runtime/POSIX/
+COPY --from=fork --chown=klee:klee \
+     /include/klee/file_api.h /include/klee/klee.h \
+     /tmp/klee_src/include/klee/
+COPY --from=fork --chown=klee:klee \
+     /lib/Core/SpecialFunctionHandler.cpp /lib/Core/SpecialFunctionHandler.h \
+     /tmp/klee_src/lib/Core/
+RUN rm -rf /tmp/klee_build130stp_z3/runtime/lib/libkleeRuntimePOSIX64_* \
+           /tmp/klee_build130stp_z3/runtime/POSIX/CMakeFiles \
+ && make -C /tmp/klee_build130stp_z3 -j"$(nproc)"
 
 ENV PATH=/home/klee/klee_build/bin:$PATH
 WORKDIR /home/klee/klee-tests
-
-# Greet with the instructions rather than a bare prompt.
-CMD ["/bin/bash", "-lc", "cat /home/klee/workflow.txt; exec bash"]
+CMD ["/bin/bash", "-lc", "cat workflow.txt; exec bash"]

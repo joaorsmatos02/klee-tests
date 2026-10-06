@@ -34,17 +34,18 @@ the same tests run on other engines too. Each engine provides the API as
 
 ## Quickest way to run them
 
-The image builds the fork and clones this repository, so nothing needs to be
-installed:
+The image is KLEE built with the fork; the suite is mounted into it, so
+nothing else needs to be installed:
 
 ```bash
 git clone https://github.com/dino-fan777/klee-tests.git
 cd klee-tests
-docker build -t klee-fsapi .
-docker run -it --rm klee-fsapi
+docker build -t klee-tests \
+  --build-context fork=https://github.com/dino-fan777/klee.git#shared-testsuite .
+docker run -it --rm -v "$PWD":/home/klee/klee-tests klee-tests
 ```
 
-It opens in `/home/klee/klee-tests` and prints the usage notes on entry. Then:
+It opens in the suite and prints the usage notes on entry. Then:
 
 ```bash
 make run_all            # all 133 tests; expect 59 passed / 74 failed
@@ -71,36 +72,27 @@ From outside the container, leave out `-t`, which would merge the two
 streams into the file:
 
 ```bash
-docker run --rm klee-fsapi make json_all > results.json
+docker run --rm -v "$PWD":/home/klee/klee-tests klee-tests make json_all > results.json
 ```
 
 Each test gives its `result`, KLEE's `completed_paths`,
 `partially_completed_paths` and `generated_tests`, and its `output_dir`.
 Totals are given per suite and overall.
 
-### Pinning exact revisions
+### Which fork is built
 
-By default the image is built from the tip of the fork's `shared-testsuite` branch
-and of this repository's `main`. That means two builds run on different days
-can produce different images, because either branch may have moved in
-between.
-
-To get a build that can be reproduced exactly, name the commits instead:
+The image is built from whatever the `fork` build context points at: a
+branch, tag or commit of the fork on GitHub, after the `#`, or a local
+checkout:
 
 ```bash
-docker build \
-  --build-arg FORK_REF=<full fork commit hash> \
-  --build-arg TESTS_REF=<full commit hash of this repository> \
-  -t klee-fsapi .
+docker build -t klee-tests --build-context fork=https://github.com/dino-fan777/klee.git#<branch, tag or commit> .
+docker build -t klee-tests --build-context fork=../klee .
 ```
 
-`FORK_REF` selects the revision of the fork, `TESTS_REF` the revision of this
-repository. Both accept a branch, a tag, or a commit hash, but a commit hash
-**must be given in full**: git cannot fetch an abbreviated one over the
-network.
-
-Worth doing when reporting results, so the numbers can be tied to the exact
-engine and tests that produced them.
+Naming a commit makes the build reproducible, which is worth doing when
+reporting results. After editing a local checkout, build again: Docker's
+cache keeps it to recompiling what changed.
 
 ## Running without Docker
 
@@ -122,7 +114,6 @@ include/            test_helper.h, the assertions and symbolic-input helpers
 include/klee/       sra.h, the shared API for KLEE, from the fork's klee/file_api.h
 individual-tests/   one folder per system call, each with its results spreadsheet
 issues/             klee_posix_findings.xlsx, the defects the suite found
-docker/             rebuild_posix.sh and rebuild_all.sh, used by the image
 scripts/            verdict.sh, which judges a test from its log, and
                     json-results.sh, which turns a run's logs into JSON
 Dockerfile          builds the fork and this suite into a ready-to-run image
