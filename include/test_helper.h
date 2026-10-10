@@ -12,7 +12,6 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/resource.h>
 
 #include "sra.h"
 
@@ -78,10 +77,10 @@ static void create_test_file_with_mode(const char *name, mode_t mode) {
 }
 
 // Limits the test to `n` descriptors, 0 to n - 1: past them, open and dup
-// fail with EMFILE, and dup2 with EBADF
-static void limit_fds(rlim_t n) {
-    struct rlimit limit = { n, n };
-    setrlimit(RLIMIT_NOFILE, &limit);
+// fail with EMFILE, and dup2 with EBADF. Setup, like create_test_file: it
+// goes through the API, as setrlimit(RLIMIT_NOFILE) is not under test.
+static void limit_fds(int n) {
+    __file_set_max_fds(n);
 }
 
 static cnstr_t exists(const char *fname) {
