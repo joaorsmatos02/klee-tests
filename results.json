@@ -1133,8 +1133,8 @@
     },
     {
       "suite": "dup",
-      "total": 13,
-      "passed": 11,
+      "total": 7,
+      "passed": 5,
       "failed": 2,
       "tests": [
         {
@@ -1167,19 +1167,19 @@
         {
           "suite": "dup",
           "test": "test_04",
-          "result": "pass",
-          "completed_paths": 2,
-          "partially_completed_paths": 2,
-          "generated_tests": 3,
+          "result": "fail",
+          "completed_paths": 0,
+          "partially_completed_paths": 4,
+          "generated_tests": 2,
           "output_dir": "individual-tests/dup/klee-out-test_04"
         },
         {
           "suite": "dup",
           "test": "test_05",
-          "result": "pass",
-          "completed_paths": 4,
-          "partially_completed_paths": 0,
-          "generated_tests": 4,
+          "result": "fail",
+          "completed_paths": 0,
+          "partially_completed_paths": 4,
+          "generated_tests": 2,
           "output_dir": "individual-tests/dup/klee-out-test_05"
         },
         {
@@ -1199,60 +1199,68 @@
           "partially_completed_paths": 2,
           "generated_tests": 3,
           "output_dir": "individual-tests/dup/klee-out-test_07"
-        },
+        }
+      ]
+    },
+    {
+      "suite": "dup2",
+      "total": 6,
+      "passed": 6,
+      "failed": 0,
+      "tests": [
         {
-          "suite": "dup",
-          "test": "test_08",
+          "suite": "dup2",
+          "test": "test_01",
           "result": "pass",
           "completed_paths": 2,
           "partially_completed_paths": 2,
           "generated_tests": 3,
-          "output_dir": "individual-tests/dup/klee-out-test_08"
+          "output_dir": "individual-tests/dup2/klee-out-test_01"
         },
         {
-          "suite": "dup",
-          "test": "test_09",
+          "suite": "dup2",
+          "test": "test_02",
+          "result": "pass",
+          "completed_paths": 4,
+          "partially_completed_paths": 0,
+          "generated_tests": 4,
+          "output_dir": "individual-tests/dup2/klee-out-test_02"
+        },
+        {
+          "suite": "dup2",
+          "test": "test_03",
           "result": "pass",
           "completed_paths": 2,
           "partially_completed_paths": 2,
           "generated_tests": 3,
-          "output_dir": "individual-tests/dup/klee-out-test_09"
+          "output_dir": "individual-tests/dup2/klee-out-test_03"
         },
         {
-          "suite": "dup",
-          "test": "test_10",
-          "result": "fail",
-          "completed_paths": 0,
-          "partially_completed_paths": 4,
-          "generated_tests": 2,
-          "output_dir": "individual-tests/dup/klee-out-test_10"
-        },
-        {
-          "suite": "dup",
-          "test": "test_11",
-          "result": "fail",
-          "completed_paths": 0,
-          "partially_completed_paths": 4,
-          "generated_tests": 2,
-          "output_dir": "individual-tests/dup/klee-out-test_11"
-        },
-        {
-          "suite": "dup",
-          "test": "test_12",
+          "suite": "dup2",
+          "test": "test_04",
           "result": "pass",
           "completed_paths": 2,
           "partially_completed_paths": 2,
           "generated_tests": 3,
-          "output_dir": "individual-tests/dup/klee-out-test_12"
+          "output_dir": "individual-tests/dup2/klee-out-test_04"
         },
         {
-          "suite": "dup",
-          "test": "test_13",
+          "suite": "dup2",
+          "test": "test_05",
           "result": "pass",
           "completed_paths": 2,
           "partially_completed_paths": 2,
           "generated_tests": 3,
-          "output_dir": "individual-tests/dup/klee-out-test_13"
+          "output_dir": "individual-tests/dup2/klee-out-test_05"
+        },
+        {
+          "suite": "dup2",
+          "test": "test_06",
+          "result": "pass",
+          "completed_paths": 2,
+          "partially_completed_paths": 2,
+          "generated_tests": 3,
+          "output_dir": "individual-tests/dup2/klee-out-test_06"
         }
       ]
     }

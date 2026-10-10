@@ -1,11 +1,11 @@
 /*
- * test_09.c - dup2 to already-open fd closes target first
+ * test_06.c - dup2 to already-open fd closes target first
  *
  * Opens two fds. dup2 overwrites second with first. Second fd now
  * points to first's file. Verifies by reading through new fd2.
  *
- * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_09.c
- * Run    : klee --posix-runtime --libc=uclibc test_09.bc
+ * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_06.c
+ * Run    : klee --posix-runtime --libc=uclibc test_06.bc
  */
 #include "test_helper.h"
 

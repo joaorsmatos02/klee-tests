@@ -1,11 +1,11 @@
 /*
- * test_08.c - dup2(fd, fd) same fd returns fd (no-op)
+ * test_05.c - dup2(fd, fd) same fd returns fd (no-op)
  *
  * The code does *f2 = *f which is a self-copy. POSIX says dup2 to self
  * should return fd without closing. KLEE does this correctly by accident.
  *
- * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_08.c
- * Run    : klee --posix-runtime --libc=uclibc test_08.bc
+ * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_05.c
+ * Run    : klee --posix-runtime --libc=uclibc test_05.bc
  */
 #include "test_helper.h"
 

@@ -16,8 +16,10 @@
 #   make run_chmod_12          run chmod/test_12 only
 #   make run_close             run all close() tests
 #   make run_close_05          run close/test_05 only
-#   make run_dup               run all dup/dup2 tests
-#   make run_dup_11            run dup/test_11 only
+#   make run_dup               run all dup() tests
+#   make run_dup_05            run dup/test_05 only
+#   make run_dup2              run all dup2() tests
+#   make run_dup2_03           run dup2/test_03 only
 #   make compile_all           compile everything
 #   make compile_open          compile open/ only
 #   make clean                 nuke everything
@@ -36,7 +38,7 @@ DIM      = \033[2m
 RESET    = \033[0m
 BG_CYAN  = \033[46;1;37m
 
-SUITES = open write read lseek chmod close dup
+SUITES = open write read lseek chmod close dup dup2
 
 .PHONY: run_all compile_all clean $(addprefix run_,$(SUITES)) \
         $(addprefix compile_,$(SUITES)) $(addprefix clean_,$(SUITES))
@@ -95,6 +97,8 @@ run_close:
 	@$(MAKE) -C individual-tests/close run
 run_dup:
 	@$(MAKE) -C individual-tests/dup run
+run_dup2:
+	@$(MAKE) -C individual-tests/dup2 run
 
 compile_open:
 	@$(MAKE) -C individual-tests/open compile
@@ -110,6 +114,8 @@ compile_close:
 	@$(MAKE) -C individual-tests/close compile
 compile_dup:
 	@$(MAKE) -C individual-tests/dup compile
+compile_dup2:
+	@$(MAKE) -C individual-tests/dup2 compile
 
 clean_open:
 	@$(MAKE) -C individual-tests/open clean
@@ -125,6 +131,8 @@ clean_close:
 	@$(MAKE) -C individual-tests/close clean
 clean_dup:
 	@$(MAKE) -C individual-tests/dup clean
+clean_dup2:
+	@$(MAKE) -C individual-tests/dup2 clean
 
 run_open_%:
 	@$(MAKE) -C individual-tests/open compile
@@ -147,6 +155,10 @@ run_close_%:
 run_dup_%:
 	@$(MAKE) -C individual-tests/dup compile
 	@$(MAKE) -C individual-tests/dup run_$*
+
+run_dup2_%:
+	@$(MAKE) -C individual-tests/dup2 compile
+	@$(MAKE) -C individual-tests/dup2 run_$*
 
 # json_all, json_open, json_open_12 and so on run exactly what the matching
 # run_* target runs, with its usual output moved to stderr, then print the

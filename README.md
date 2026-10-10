@@ -12,7 +12,8 @@ internals.
 | `write` | 13 | |
 | `lseek` | 15 | |
 | `chmod` | 13 | |
-| `dup` / `dup2` | 13 | |
+| `dup` | 7 | |
+| `dup2` | 6 | |
 | **Total** | **133** | 59 pass, 74 fail |
 
 Run natively on Linux every test passes, so each failure on an engine is

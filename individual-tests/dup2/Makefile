@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════
-# dup() Makefile
+# dup2() Makefile
 # Symbolic files are created by the tests themselves via __file_create()
 # ═══════════════════════════════════════════════════════════════
 
@@ -13,8 +13,7 @@ SYMFILES =
 
 HEADER   = ../../include/test_helper.h
 
-TESTS = test_01 test_02 test_03 test_04 test_05 test_06 \
-        test_07
+TESTS = test_01 test_02 test_03 test_04 test_05 test_06
 
 BCFILES = $(addsuffix .bc, $(TESTS))
 
@@ -43,7 +42,7 @@ compile: $(BCFILES)
 run: compile
 	@echo ""
 	@echo "$(CYAN)═══════════════════════════════════════════════════════════$(RESET)"
-	@echo "$(WHITE)  KLEE dup Test Suite — $(words $(TESTS)) tests$(RESET)"
+	@echo "$(WHITE)  KLEE dup2 Test Suite — $(words $(TESTS)) tests$(RESET)"
 	@echo "$(CYAN)═══════════════════════════════════════════════════════════$(RESET)"
 	@passed=0; failed=0; total=0; failed_list=""; \
 	for t in $(TESTS); do \

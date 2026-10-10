@@ -1,5 +1,8 @@
 /*
- * test_04.c - dup2 to specific target fd succeeds
+ * test_04.c - dup'd fd shares same file, write then read through other
+ *
+ * Write through fd1, seek to 0 on fd2, read through fd2. Data should match
+ * because both fds point to the same dfile buffer.
  *
  * Compile: clang -emit-llvm -c -g -O0 -Xclang -disable-O0-optnone -I../../include test_04.c
  * Run    : klee --posix-runtime --libc=uclibc test_04.bc
@@ -10,18 +13,30 @@ int main(void) {
    char fname[FNAME_SIZE];
    int  flags;
    create_symbolic_file_name(fname);
-   flags = O_RDONLY;
+   flags = O_RDWR;
 
    create_test_file(fname);
    __assume(exists(fname));
 
-   int fd = open(fname, flags, 0644);
-   __sra_assert(open_succeeds(fd));
+   int fd1 = open(fname, flags, 0644);
+   __sra_assert(open_succeeds(fd1));
 
-   int fd2 = dup2(fd, 10);
-   __sra_assert(dup2_returns(fd2, 10));
+   int fd2 = dup(fd1);
+   __sra_assert(dup_is_new(fd2, fd1));
 
-   cleanup_fd(fd);
+   //write through fd1
+   lseek(fd1, 0, SEEK_SET);
+   ssize_t wret = write(fd1, "hello", 5);
+   __sra_assert(write_all(wret, 5));
+
+   //read through fd2 — same dfile, different fd
+   lseek(fd2, 0, SEEK_SET);
+   char buf[5] = {0};
+   ssize_t rret = read(fd2, buf, 5);
+   __sra_assert(read_all(rret, 5));
+   __sra_assert(buffers_match("hello", buf, 5));
+
+   cleanup_fd(fd1);
    cleanup_fd(fd2);
    return 0;
 }
